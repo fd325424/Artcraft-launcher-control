@@ -55,7 +55,7 @@ photocraft-cli --cmd "layer.add" --params '{...}' --cmd "layer.opacity" --params
 
 ### Group C: `positional id key=value`
 
-**Apps:** LightCraft, PdfCraft
+**Apps:** LightCraft
 
 ```bash
 # List commands
@@ -66,10 +66,11 @@ lightcraft-cli describe "import.raw"
 
 # Run a command (key=value pairs)
 lightcraft-cli import.raw --file="/path/to/image.raw" --develop=true
-
-# PdfCraft example
-pdfcraft-cli export.pdf --input="doc.pdf" --output="out.pdf" --format="png" --dpi=300
 ```
+
+### PdfCraft: 子命令风格（独立语法）
+
+PdfCraft 使用独立的子命令语法，不属于 Group A-E。详见下方 PdfCraft (Acrobat-style) 章节。
 
 ### Group D: `positional id {json}`
 
@@ -207,11 +208,56 @@ lightcraft-cli export.jpeg --path="/output.jpg" --quality="90" --dpi="300"
 
 ### PdfCraft (Acrobat-style)
 
+PdfCraft 使用子命令风格（非 Group A-E），语法为 `pdfcraft-cli <子命令> [参数]`。
+
 ```bash
-pdfcraft-cli read.text --input="doc.pdf" --page="3"
-pdfcraft-cli export.pdf --input="doc.pdf" --output="pages/" --format="png" --dpi="300"
-pdfcraft-cli merge.pdf --inputs="a.pdf,b.pdf" --output="merged.pdf"
-pdfcraft-cli split.pdf --input="doc.pdf" --pages="1-5" --output="chunk.pdf"
+# 文档信息（JSON 输出）
+pdfcraft-cli info <file.pdf> [--password PW]
+
+# 提取文本（页间用分页符分隔）
+pdfcraft-cli text <file.pdf> [--page N]
+
+# 渲染页面为图片
+pdfcraft-cli render <file.pdf> --page N [--dpi 96] --out x.png   # .png/.jpg/.tif/.pam
+
+# 编辑文档（选项按顺序执行）
+pdfcraft-cli edit <in.pdf> --out out.pdf [--rotate 1,3:90] [--delete 2,4] [--move 5:1] \
+    [--insert-blank 1] [--title T] [--author A] [--full]
+
+# 合并多个 PDF
+pdfcraft-cli combine <a.pdf> <b.pdf> … --out combined.pdf
+
+# 提取指定页（支持范围，按给定顺序）
+pdfcraft-cli extract <in.pdf> --pages 1,3,5-8 --out out.pdf
+
+# 拆分 PDF（每 N 页一份，或按指定页前拆分）
+pdfcraft-cli split <in.pdf> (--every N | --before 3,7) [--out-dir DIR]
+
+# 批量处理（convert/ocr/optimize，按顺序执行）
+pdfcraft-cli batch <files or dirs...> --steps convert,ocr,optimize --out-dir DIR \
+    [--recursive] [--root DIR] [--stop-on-error] [--ppi 150] [--quality 60] \
+    [--dpi 300] [--language en] [--ocr-all-pages]
+
+# 文档体检
+pdfcraft-cli check <files or dirs…> [--timeout 20] [--dpi 36] [--json out.json]
+
+# 检测伪脱敏（发现则失败）
+pdfcraft-cli audit <file.pdf> [--password PW]
+
+# 列出自动化工具及 JSON Schema
+pdfcraft-cli tools
+
+# 运行单个工具
+pdfcraft-cli run <tool> [key=value …] [--root DIR] [--out image.png]
+
+# 按脚本运行（JSON 数组格式）
+pdfcraft-cli run --script steps.json [--root DIR] [--report]
+
+# MCP 服务器（stdin/stdout）
+pdfcraft-cli mcp [--root DIR] [--compact] [--automation-read-root DIR] [--automation-write-root DIR]
+
+# 驱动桌面应用（--control FILE 启动时）
+pdfcraft-cli ui --control FILE <method> [key=value …] [--out shot.png]
 ```
 
 ### DesignCraft (InDesign-style)

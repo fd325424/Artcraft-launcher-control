@@ -39,6 +39,16 @@ CRAFT_CLIS = [
     "pdfcraft-cli",
 ]
 
+# --- Common install directories for Crafting App CLIs ---
+# (checked when the CLI is not on PATH)
+CRAFT_INSTALL_DIRS = [
+    Path("C:/Program Files/PdfCraft"),
+    Path("C:/Program Files/ArtCraft"),
+    Path("C:/Program Files"),
+    Path.home() / "Artcraft" / "apps",
+    Path("D:/Artcraft/apps"),
+]
+
 # --- MCP server executables to detect ---
 MCP_SERVERS = ["artcraft-mcp-server.exe", "artcraft-mcp.exe"]
 
@@ -81,11 +91,33 @@ def check_launcher():
     }
 
 
+def find_craft_cli(name):
+    """Find a Crafting App CLI in PATH or common install dirs."""
+    path = find_executable(name)
+    if path:
+        return path
+    # Check common install directories
+    exe_name = name + ".exe" if os.name == "nt" else name
+    for d in CRAFT_INSTALL_DIRS:
+        if d.exists():
+            exe = d / exe_name
+            if exe.exists():
+                return str(exe)
+            # Also check case variations
+            try:
+                for entry in d.iterdir():
+                    if entry.name.lower() == exe_name.lower() and entry.is_file():
+                        return str(entry)
+            except (PermissionError, OSError):
+                pass
+    return None
+
+
 def check_craft_clis():
     """Check for Crafting App CLIs."""
     results = []
     for cli in CRAFT_CLIS:
-        path = find_executable(cli)
+        path = find_craft_cli(cli)
         results.append({
             "name": cli,
             "found": path is not None,

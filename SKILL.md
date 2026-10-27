@@ -129,7 +129,7 @@ gridcraft-cli --cmd 'id={...}'
 # PhotoCraft/VectorCraft 风格
 photocraft-cli --cmd id --params '{...}'
 
-# LightCraft/PdfCraft 风格
+# LightCraft 风格
 lightcraft-cli id key=value
 
 # EffectCraft 风格
@@ -137,6 +137,13 @@ effectcraft-cli id '{...}'
 
 # FilmCraft 风格（需要生成 JSONL 脚本文件）
 filmcraft-cli --script script.jsonl
+
+# PdfCraft 风格（子命令，独立语法）
+pdfcraft-cli info <file.pdf>
+pdfcraft-cli text <file.pdf> --page 1
+pdfcraft-cli render <file.pdf> --page 1 --out page.png
+pdfcraft-cli combine a.pdf b.pdf --out merged.pdf
+pdfcraft-cli split <in.pdf> --every 5 --out-dir pages/
 ```
 
 ### MCP 方式
@@ -234,6 +241,18 @@ python tools/artcraft_3d_runner.py --image "path.png" --mode both --out-dir ./ou
 2. 查看命令列表：`filmcraft-cli command_list`
 3. FilmCraft 需要 JSONL 脚本文件，格式见 references/craft-cli-syntax.md
 4. 执行：`filmcraft-cli --script script.jsonl`
+
+### 工作流 4b：用 PdfCraft 处理 PDF
+
+1. 确认 pdfcraft-cli 可用（check_env.py 已检测）
+2. 查看文档信息：`pdfcraft-cli info <file.pdf>`
+3. 提取文本：`pdfcraft-cli text <file.pdf> --page N`
+4. 渲染页面为图片：`pdfcraft-cli render <file.pdf> --page N --out page.png`
+5. 合并 PDF：`pdfcraft-cli combine a.pdf b.pdf --out merged.pdf`
+6. 拆分 PDF：`pdfcraft-cli split <in.pdf> --every 5 --out-dir pages/`
+7. 提取指定页：`pdfcraft-cli extract <in.pdf> --pages 1,3,5-8 --out out.pdf`
+8. 批量处理：`pdfcraft-cli batch <dir> --steps convert,ocr,optimize --out-dir out/`
+9. 验证输出文件
 
 ### 工作流 5：AI 生成图像
 

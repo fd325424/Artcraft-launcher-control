@@ -197,19 +197,36 @@
 ## PdfCraft — Acrobat 替代
 
 **能力：**
-- PDF 读取
-- 页面操作（合并、拆分、旋转）
-- 文本提取
-- 格式转换（PDF↔图片）
-- 表单填写
+- PDF 文档信息（`info`）— 页数、作者、书签、链接、加密状态等
+- 文本提取（`text`）— 按页提取文本，页间用分页符分隔
+- 页面渲染（`render`）— 渲染为 PNG/JPG/TIF/PAM 图片
+- 页面编辑（`edit`）— 旋转、删除、移动、插入空白页、设置标题/作者
+- 合并（`combine`）— 多 PDF 合并为一
+- 拆分/提取（`split` / `extract`）— 按页码范围提取或拆分
+- 批量处理（`batch`）— convert/ocr/optimize 批量处理
+- 文档体检（`check`）— 检查多个文件
+- 伪脱敏检测（`audit`）— 检测伪脱敏（发现则失败）
+- 自动化工具（`tools` / `run`）— 通过 JSON Schema 运行工具
+- MCP 服务器（`mcp`）— stdin/stdout MCP 服务器
+- 桌面应用控制（`ui`）— 通过控制通道驱动桌面应用
 
-**常用命令族：**
-- `read.*` — 读取
-- `merge.*` / `split.*` — 合并拆分
-- `export.*` — 导出
-- `form.*` — 表单
+**CLI 语法：** 子命令风格（`pdfcraft-cli <子命令> [参数]`），非 Group A-E
 
-**特殊：** 控制通道基于文件（`--control FILE`）
+**常用命令：**
+```bash
+pdfcraft-cli info <file.pdf>              # 文档信息
+pdfcraft-cli text <file.pdf> --page 1     # 提取文本
+pdfcraft-cli render <file.pdf> --page 1 --out page.png
+pdfcraft-cli edit <in.pdf> --out out.pdf --delete 2,4
+pdfcraft-cli combine a.pdf b.pdf --out merged.pdf
+pdfcraft-cli split <in.pdf> --every 5 --out-dir pages/
+pdfcraft-cli extract <in.pdf> --pages 1,3,5-8 --out out.pdf
+pdfcraft-cli batch <dir> --steps convert,ocr,optimize --out-dir out/
+```
+
+**特殊：** 控制通道基于文件（`--control FILE`），桌面应用启动时用 `pdfcraft --control FILE`，然后 `pdfcraft-cli ui --control FILE <method>` 驱动
+
+**安装路径：** `C:\Program Files\PdfCraft\pdfcraft-cli.exe`（默认）
 
 ## Installation
 
