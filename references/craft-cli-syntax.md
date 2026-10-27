@@ -262,12 +262,49 @@ pdfcraft-cli ui --control FILE <method> [key=value …] [--out shot.png]
 
 ### DesignCraft (InDesign-style)
 
+DesignCraft CLI 采用 `run --cmd ID=JSON` 子命令风格，共 536 个命令（可用 `designcraft-cli commands` 查看全部，`describe COMMAND` 查看单个详情）。典型工作流：打开/新建文档 → 排布内容 → 导出。
+
 ```bash
-designcraft-cli --cmd 'page.add={"size":"A4","margins":"2cm"}'
-designcraft-cli --cmd 'text.frame={"page":1,"x":50,"y":50,"w":200,"h":100,"text":"Hello"}'
-designcraft-cli --cmd 'image.place={"page":1,"path":"photo.jpg","x":50,"y":200,"w":150}'
-designcraft-cli --cmd 'export.pdf={"path":"output.pdf"}'
+# 新建 A4 文档（示例文档用 --sample 更省事）
+designcraft-cli run --in mydoc.indd --cmd file.new='{"size":"A4","margins":"2cm"}'
+
+# 用内置样例文档（杂志样例，多页）做快速测试
+designcraft-cli run --sample
+
+# 在页面 1 放置文本框（text.placeCaret 配合 frame 使用，或先创建框架）
+designcraft-cli run --in doc.indd --cmd text.placeCaret='{"page":1,"x":50,"y":50}'
+
+# 放置图片
+designcraft-cli run --in doc.indd --cmd image.place='{"page":1,"path":"photo.jpg","x":50,"y":200,"w":150,"h":100}'
+
+# 导出 PDF / 导出 EPUB / 导出 PPTX
+designcraft-cli run --in doc.indd --cmd file.exportPdf='{"path":"output.pdf"}'
+designcraft-cli run --in doc.indd --cmd file.exportEpub='{"path":"output.epub"}'
+designcraft-cli run --in doc.indd --cmd file.exportPptx='{"path":"output.pptx"}'
+
+# 批量执行（脚本文件）
+designcraft-cli script steps.json --in doc.indd --export out.pdf
+
+# 查看全部命令 / 单个命令详情
+designcraft-cli commands [FILTER]
+designcraft-cli describe file.exportPdf
 ```
+
+命令族速览（`commands` 输出按前缀分组，共 536 个）：
+
+| 前缀 | 代表命令 | 用途 |
+|------|----------|------|
+| `file.*` | new / open / save / exportPdf / exportEpub / exportPptx / package / print | 文档生命周期与导出 |
+| `page.*` | insert / delete / move / transition | 页面增删移动 |
+| `text.*` | placeCaret / insert / delete / thread / select | 文本编辑 |
+| `image.*` | place / replace / fit | 图片置入 |
+| `layout.*` | createAlternate / 网格 | 版式设置 |
+| `style.*` | apply / create / edit | 段落/字符样式 |
+| `table.*` | create / insertRow / cell.* | 表格 |
+| `effect.*` | 样式效果 | 效果 |
+| `export.*` / `file.export*` | Pdf / Epub / Pptx / Html / Xml | 多格式导出 |
+
+> 注意：文档中旧的 `--cmd 'page.add=...'` Group A 写法与真实 CLI 不符；真实语法是 `run --cmd ID=JSON`（带 `run` 子命令，且路径用 Windows 原生路径）。
 
 ### EffectCraft (After Effects-style)
 

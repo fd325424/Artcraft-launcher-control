@@ -110,7 +110,7 @@ artcraft-toolbox --control 7877 --control-token-file /path/to/token
 | FilmCraft | Premiere Pro | filmcraft-cli | 693 |
 | EffectCraft | After Effects | effectcraft-cli | 669 |
 | SoundCraft | Audition | soundcraft-cli | 465 |
-| DesignCraft | InDesign | designcraft-cli | 446 |
+| DesignCraft | InDesign | designcraft-cli | 536 |
 | LightCraft | Lightroom | lightcraft-cli | 296 |
 | GridCraft | Excel | gridcraft-cli | 315 |
 | WordCraft | Word | wordcraft-cli | 460 |
@@ -123,8 +123,12 @@ artcraft-toolbox --control 7877 --control-token-file /path/to/token
 不同应用的 CLI 语法有差异，详见 references/craft-cli-syntax.md。常见模式：
 
 ```bash
-# GridCraft/CADCraft/DeckCraft/WordCraft/SoundCraft/DesignCraft 风格
+# GridCraft/CADCraft/DeckCraft/WordCraft/SoundCraft 风格
 gridcraft-cli --cmd 'id={...}'
+
+# DesignCraft 风格（子命令 run + --cmd ID=JSON）
+designcraft-cli run --cmd file.exportPdf='{"path":"out.pdf"}'
+designcraft-cli run --sample --cmd file.exportPdf='{"path":"out.pdf"}'
 
 # PhotoCraft/VectorCraft 风格
 photocraft-cli --cmd id --params '{...}'

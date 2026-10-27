@@ -11,7 +11,7 @@
 | FilmCraft | Premiere Pro | 693 | 17 | 9876 |
 | EffectCraft | After Effects | 669 | 27 | 9877 |
 | SoundCraft | Audition | 465 | 17 | 动态 |
-| DesignCraft | InDesign | 446 | 25 | 动态 |
+| DesignCraft | InDesign | 536 | 25 | 动态 |
 | LightCraft | Lightroom | 296 | 318 | 7980 |
 | GridCraft | Excel | 315 | 21 | 动态 |
 | WordCraft | Word | 460 | 16 | 动态 |
@@ -108,13 +108,20 @@
 - 文本框架
 - 图片放置
 - 母版页
-- PDF 导出
+- 多格式导出（PDF / EPUB / PPTX / HTML / XML）
+
+**命令数：** 536（`designcraft-cli commands` 查看全部，`describe COMMAND` 查详情）
+
+**调用风格：** `designcraft-cli run --cmd ID=JSON`（或 `--sample` 用内置样例文档测试）
 
 **常用命令族：**
-- `page.*` — 页面
-- `text.*` — 文本
-- `image.*` — 图片
-- `export.*` — 导出
+- `file.*` — 文档生命周期与导出（new/open/save/exportPdf/exportEpub/exportPptx/package）
+- `page.*` — 页面（insert/delete/move/transition）
+- `text.*` — 文本（placeCaret/insert/delete/thread/select）
+- `image.*` — 图片（place/replace/fit）
+- `style.*` / `table.*` / `layout.*` / `effect.*` — 样式、表格、版式、效果
+
+> 安装位置：`C:\Program Files\DesignCraft\designcraft-cli.exe`，v0.13.0。
 
 ## LightCraft — Lightroom 替代
 
