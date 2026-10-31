@@ -4,10 +4,12 @@ Each Crafting App has its own CLI with slightly different syntax. This document 
 
 ## General Pattern
 
-All Crafting App CLIs support:
-- `command_list` — list all available commands
-- `describe` or `describe --id <command>` — get command parameters
-- Execution — run a command with parameters
+Most Crafting App CLIs support listing and describing commands, then executing them:
+- Engine-style apps (PhotoCraft, VectorCraft, DesignCraft): `commands` to list, `describe COMMAND` for params, `run --cmd ID=JSON` to execute
+- Legacy-style apps: `command_list` / `describe --id` / `--cmd 'id={...}'` (verify with `--help` first — syntaxes change quickly)
+- PdfCraft: pure subcommands (see below)
+
+> 语法以各 CLI 的 `--help` 为准。DesignCraft、PdfCraft 已按真实二进制核实（2026-10）；PhotoCraft 按官方 v0.16 文档；其余按社区文档整理。
 
 ## Syntax by Craft Family
 
@@ -36,24 +38,26 @@ gridcraft-cli --cmd 'insert.chart={...}' --cmd 'format.range={...}'
 
 **Apps:** PhotoCraft, VectorCraft
 
+> 注：PhotoCraft 官方 v0.16 文档的语法是 `photocraft-cli run <file> --cmd 'id={json}' --out <out>`（run 子命令风格）。下面的 `--cmd id --params` 为旧版/简化写法，实际使用请先 `photocraft-cli --help` 核对。
+
 ```bash
 # List commands
-photocraft-cli command_list
+photocraft-cli commands
 
 # Search commands
-photocraft-cli command_list --search "layer"
+photocraft-cli commands --filter "layer"
 
-# Describe a command
-photocraft-cli describe --id "layer.add"
+# Describe a command (parameter docs)
+photocraft-cli commands --filter "layer.add" --json
 
-# Run a command
+# Run a command (official v0.16 style)
+photocraft-cli run photo.psd --cmd 'layer.add={"image":"input.png","x":100,"y":100}' --out out.png
+
+# Legacy style (older builds)
 photocraft-cli --cmd "layer.add" --params '{"image":"input.png","x":100,"y":100}'
-
-# Run multiple commands
-photocraft-cli --cmd "layer.add" --params '{...}' --cmd "layer.opacity" --params '{...}'
 ```
 
-### Group C: `positional id key=value`
+### Group C: `positional id --key=value`
 
 **Apps:** LightCraft
 
@@ -64,7 +68,7 @@ lightcraft-cli command_list
 # Describe a command
 lightcraft-cli describe "import.raw"
 
-# Run a command (key=value pairs)
+# Run a command (--key=value pairs)
 lightcraft-cli import.raw --file="/path/to/image.raw" --develop=true
 ```
 
@@ -114,16 +118,14 @@ filmcraft-cli --script script.jsonl
 ### PhotoCraft (Photoshop-style)
 
 ```bash
-# List all 858 commands
-photocraft-cli command_list
+# List commands
+photocraft-cli commands
 
-# Common operations
-photocraft-cli --cmd "open.file" --params '{"path":"image.psd"}'
-photocraft-cli --cmd "layer.add" --params '{"name":"New Layer"}'
-photocraft-cli --cmd "layer.opacity" --params '{"layer":0,"value":0.5}'
-photocraft-cli --cmd "filter.blur" --params '{"radius":5,"layer":0}'
-photocraft-cli --cmd "save.file" --params '{"path":"output.psd"}'
-photocraft-cli --cmd "export.png" --params '{"path":"output.png","scale":2}'
+# Common operations (run subcommand style, official v0.16)
+photocraft-cli run photo.psd --cmd 'layer.add={"name":"New Layer"}' --out out.psd
+photocraft-cli run photo.psd --cmd 'layer.opacity={"layer":0,"value":0.5}' --out out.psd
+photocraft-cli run photo.psd --cmd 'filter.blur={"radius":5,"layer":0}' --out out.psd
+photocraft-cli run photo.psd --cmd 'export.png={"path":"output.png","scale":2}'
 ```
 
 ### VectorCraft (Illustrator-style)
@@ -262,7 +264,7 @@ pdfcraft-cli ui --control FILE <method> [key=value …] [--out shot.png]
 
 ### DesignCraft (InDesign-style)
 
-DesignCraft CLI 采用 `run --cmd ID=JSON` 子命令风格，共 536 个命令（可用 `designcraft-cli commands` 查看全部，`describe COMMAND` 查看单个详情）。典型工作流：打开/新建文档 → 排布内容 → 导出。
+DesignCraft CLI 采用 `run --cmd ID=JSON` 子命令风格（已实测核实）。命令列表用 `designcraft-cli commands` 查看，`describe COMMAND` 查看单个详情。典型工作流：打开/新建文档 → 排布内容 → 导出。
 
 ```bash
 # 新建 A4 文档（示例文档用 --sample 更省事）
@@ -290,7 +292,7 @@ designcraft-cli commands [FILTER]
 designcraft-cli describe file.exportPdf
 ```
 
-命令族速览（`commands` 输出按前缀分组，共 536 个）：
+命令族速览（`commands` 输出按前缀分组）：
 
 | 前缀 | 代表命令 | 用途 |
 |------|----------|------|
@@ -332,9 +334,10 @@ Every Crafting App exposes these MCP tools:
 
 ## Tips
 
-1. **Always start with `command_list`** — never guess command ids
-2. **Use `describe`** — get exact parameters before running
+1. **先查命令再执行** — 用 `commands`（engine 风格）或 `command_list`（legacy 风格）列出命令，不要猜命令 id
+2. **用 describe / commands --json** — 执行前获取准确参数
 3. **Check `enabled` status** — some commands may be disabled with a reason
 4. **FilmCraft needs JSONL** — generate script files for complex sequences
 5. **PhotoCraft control channel is authenticated** — see control-protocol.md
 6. **PdfCraft uses file-based control** — `--control FILE` instead of port
+7. **语法会变** — CLI 迭代快，以 `--help` 实际输出为准

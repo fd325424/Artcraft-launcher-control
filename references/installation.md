@@ -42,7 +42,7 @@ Download from official sources only:
 ### Step 4: Verify
 
 ```bash
-artcraft-toolbox-cli apps_status
+artcraft-toolbox-cli status
 ```
 
 This shows every Crafting App's install and update status.
@@ -63,6 +63,8 @@ Download the appropriate binary for your OS and architecture.
 
 ### Via DSH Plugin Installer (cross-platform)
 
+> [lznnnnn1998/dsh-artcraft](https://github.com/lznnnnn1998/dsh-artcraft) 为第三方社区项目（非 storytold 官方），使用前请自行评估。
+
 ```bash
 git clone https://github.com/lznnnnn1998/dsh-artcraft
 cd dsh-artcraft
@@ -79,12 +81,16 @@ node scripts/install-craft.mjs --from-source
 ### Verify CLI Installation
 
 ```bash
-photocraft-cli command_list
-filmcraft-cli command_list
-vectorcraft-cli command_list
+photocraft-cli commands
+filmcraft-cli commands
+vectorcraft-cli commands
 ```
 
+> 若提示未知子命令，先用 `<app>-cli --help` 查看该版本实际语法。
+
 ## Method 3: Install ArtCraft MCP Server (for AI Generation)
+
+> [theCosmicCrafter/artcraft-mcp](https://github.com/theCosmicCrafter/artcraft-mcp) 为第三方社区项目（非 storytold 官方），提供图像/视频/3D/语音生成的 MCP 服务。
 
 ### Download
 
@@ -94,8 +100,7 @@ cd artcraft-mcp
 ```
 
 The `bin/` directory contains ready-to-run 64-bit Windows binaries:
-- `artcraft-mcp-server.exe` — core official MCP server
-- `artcraft-mcp.exe` — extended 55-tool community edition
+- `artcraft-mcp.exe` — full tool suite (60+ tools)
 
 ### Authentication
 
@@ -120,7 +125,7 @@ To get credentials:
 python setup_mcp.py
 ```
 
-This auto-detects and registers the MCP server in Claude Desktop, Windsurf, or Cursor.
+（脚本位于 artcraft-mcp 仓库根目录）This auto-detects and registers the MCP server in Claude Desktop, Windsurf, or Cursor.
 
 ## Method 4: Configure MCP in WorkBuddy
 
@@ -130,7 +135,7 @@ Edit `~/.workbuddy/mcp.json`:
 {
   "mcpServers": {
     "artcraft": {
-      "command": "C:\\path\\to\\artcraft-mcp\\bin\\artcraft-mcp-server.exe",
+      "command": "C:\\path\\to\\artcraft-mcp\\bin\\artcraft-mcp.exe",
       "args": []
     }
   }

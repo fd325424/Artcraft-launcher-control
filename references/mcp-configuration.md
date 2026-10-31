@@ -4,11 +4,13 @@
 
 ArtCraft exposes three MCP surfaces:
 
-1. **artcraft-mcp-server** — AI generation (image/video/3D/voice)
+1. **artcraft-mcp** — AI generation (image/video/3D/voice)
 2. **Launcher MCP** — app management (apps_status, command_run, etc.)
 3. **Crafting App MCP** — per-app creation tools
 
-## 1. AI Generation MCP (artcraft-mcp-server)
+## 1. AI Generation MCP (artcraft-mcp)
+
+> [theCosmicCrafter/artcraft-mcp](https://github.com/theCosmicCrafter/artcraft-mcp) 为第三方社区项目（非 storytold 官方）。
 
 ### Download
 
@@ -18,8 +20,7 @@ cd artcraft-mcp
 ```
 
 Binaries in `bin/`:
-- `artcraft-mcp-server.exe` — core official (mcp_sessions + direct API)
-- `artcraft-mcp.exe` — community 55-tool edition
+- `artcraft-mcp.exe` — full tool suite (60+ tools; older docs called the core one `artcraft-mcp-server.exe`)
 
 ### WorkBuddy Configuration
 
@@ -29,7 +30,7 @@ Edit `~/.workbuddy/mcp.json`:
 {
   "mcpServers": {
     "artcraft": {
-      "command": "C:\\path\\to\\artcraft-mcp\\bin\\artcraft-mcp-server.exe",
+      "command": "C:\\path\\to\\artcraft-mcp\\bin\\artcraft-mcp.exe",
       "args": []
     }
   }
@@ -61,11 +62,11 @@ The server resolves credentials in order:
 python setup_mcp.py
 ```
 
-Auto-detects and registers in Claude Desktop, Windsurf, or Cursor.
+（脚本位于 artcraft-mcp 仓库根目录）Auto-detects and registers in Claude Desktop, Windsurf, or Cursor.
 
 ### Available MCP Tools
 
-The 55-tool community edition includes:
+The full suite includes:
 
 | Category | Example Tools |
 |----------|--------------|
@@ -154,6 +155,8 @@ Every craft exposes:
 | `<craft>_mcp_status` | Check MCP server status |
 
 ### DSH Plugin Method
+
+> [lznnnnn1998/dsh-artcraft](https://github.com/lznnnnn1998/dsh-artcraft) 为第三方社区项目（非 storytold 官方）。
 
 Install craft plugins via DSH:
 

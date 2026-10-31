@@ -2,89 +2,78 @@
 
 ArtCraft Launcher (artcraft-toolbox) manages the installation, updates, and launching of Crafting Apps.
 
+> 说明：`artcraft-toolbox` 是社区维护的套件管理器（smyrgeorge/artcraft-toolbox，非 storytold 官方仓库，但遵循官方发布契约）。`apps_status`、`command_list`、`command_run` 等是 **MCP 工具名**；CLI 子命令为 `status` / `list` / `check` / `install` / `update` / `open` / `mcp` / `serve`。引擎命令 ID（`updates.check`、`app.install` 等）通过 MCP 工具 `command_run` 或控制协议 `engine.execute` 调用。
+
 ## CLI Tool: `artcraft-toolbox-cli`
 
-### apps_status
+### status
 
-List every Crafting App's install and update status, plus the toolbox's own status.
-
-```bash
-artcraft-toolbox-cli apps_status
-```
-
-Returns JSON with each app's state: installed, version, available release, update available.
-
-### command_list
-
-List all available commands in the registry.
+Show every Crafting App's install and update status, plus the toolbox's own status.
 
 ```bash
-artcraft-toolbox-cli command_list
-artcraft-toolbox-cli command_list --filter update
-artcraft-toolbox-cli command_list --enabled-only
+artcraft-toolbox-cli status
 ```
 
-**Arguments:**
-- `--filter` — match command id or label (case-insensitive)
-- `--enabled-only` — only show enabled commands
+### list
 
-**Returns:** `{id, label, params, background, enabled, disabledReason}` for each command.
-
-### command_run
-
-Execute one engine command.
+List the app catalog (headless).
 
 ```bash
-artcraft-toolbox-cli command_run --id updates.check
-artcraft-toolbox-cli command_run --id app.install --params '{"app":"photocraft","version":"0.7.0"}'
-artcraft-toolbox-cli command_run --id app.launch --params '{"app":"photocraft","control":true}'
-artcraft-toolbox-cli command_run --id apps.updateAll
+artcraft-toolbox-cli list
 ```
 
-**Arguments:**
-- `--id` — command id (required)
-- `--params` — JSON object of parameters (optional)
-- `--wait` — wait for background command to finish (default: true; set false to return immediately)
+### check
 
-**Background commands** (return when job ends): `updates.check`, `app.install`, `app.update`, `apps.updateAll`, `toolbox.update`, `icons.refresh`
-
-With `--wait false`, background commands return `{job, pending: true}` immediately.
-
-### command_batch
-
-Execute multiple commands in order.
+Check GitHub for new releases.
 
 ```bash
-artcraft-toolbox-cli command_batch --steps '[{"id":"updates.check"},{"id":"apps.updateAll"}]' --stop-on-error
+artcraft-toolbox-cli check
 ```
 
-**Arguments:**
-- `--steps` — JSON array of `{id, params?, wait?}`
-- `--stop-on-error` — stop on first failure
+### install
 
-**Returns:** `{completed, failed, results}`
-
-### jobs_list
-
-List running background jobs.
+Download, verify and install an app.
 
 ```bash
-artcraft-toolbox-cli jobs_list
+artcraft-toolbox-cli install photocraft
 ```
 
-Returns: `{jobs: [{id, command, label, done, total, apps, phase?, fraction?}]}`
+### update
 
-### jobs_cancel
-
-Cancel a running job.
+Update apps (keeps old versions).
 
 ```bash
-artcraft-toolbox-cli jobs_cancel --job <job-id>
-# Cancel all running jobs:
-artcraft-toolbox-cli jobs_cancel
+artcraft-toolbox-cli update --all
+# Update a single app:
+artcraft-toolbox-cli update photocraft
 ```
 
-Returns: `{cancelled: n}`
+### open
+
+Open a Crafting App, optionally with its control channel for agents.
+
+```bash
+artcraft-toolbox-cli open photocraft --control
+artcraft-toolbox-cli open photocraft --no-control
+```
+
+### mcp
+
+Start the MCP server over the whole command registry.
+
+```bash
+artcraft-toolbox-cli mcp
+# Bridge to a running Launcher window:
+artcraft-toolbox-cli mcp --bridge 127.0.0.1:7877 --control-token-file /path/to/token
+```
+
+### serve
+
+Headless engine session over stdio or a loopback port (control protocol).
+
+```bash
+artcraft-toolbox-cli serve --port 7877
+```
 
 ## Engine Commands Reference
 
@@ -211,40 +200,43 @@ When configured as an MCP server, the Launcher exposes:
 ### Update everything
 
 ```bash
-artcraft-toolbox-cli apps_status
-artcraft-toolbox-cli command_run --id updates.check
-artcraft-toolbox-cli command_run --id apps.updateAll
-artcraft-toolbox-cli apps_status
+artcraft-toolbox-cli status
+artcraft-toolbox-cli check
+artcraft-toolbox-cli update --all
+artcraft-toolbox-cli status
 ```
 
 ### Install a specific version
 
-```bash
-artcraft-toolbox-cli command_run --id app.releases --params '{"app":"photocraft"}'
-artcraft-toolbox-cli command_run --id app.install --params '{"app":"photocraft","version":"0.5.0"}'
+安装特定版本需通过 MCP `command_run`（引擎命令 `app.releases` / `app.install`）或控制协议：
+
+```json
+{"method":"engine.execute","params":{"command":"app.releases","params":{"app":"photocraft"}}}
+{"method":"engine.execute","params":{"command":"app.install","params":{"app":"photocraft","version":"0.5.0"}}}
 ```
 
 ### Troubleshoot an install
 
-```bash
-artcraft-toolbox-cli command_run --id app.versions --params '{"app":"photocraft"}'
-# Then rollback if needed:
-artcraft-toolbox-cli command_run --id app.rollback --params '{"app":"photocraft"}'
+```json
+{"method":"engine.execute","params":{"command":"app.versions","params":{"app":"photocraft"}}}
+{"method":"engine.execute","params":{"command":"app.rollback","params":{"app":"photocraft"}}}
 ```
 
 ### Launch an app with control channel
 
 ```bash
-artcraft-toolbox-cli command_run --id app.launch --params '{"app":"photocraft","control":true}'
-# The reply contains the control address and token file path.
+artcraft-toolbox-cli open photocraft --control
+# Or via engine command; the reply contains the control address and token file path:
+# {"method":"engine.execute","params":{"command":"app.launch","params":{"app":"photocraft","control":true}}}
 ```
 
 ### Update the Launcher itself
 
-```bash
-artcraft-toolbox-cli command_run --id toolbox.update
-# New version used at next start; toolbox.apply swaps it in while app isn't running.
+```json
+{"method":"engine.execute","params":{"command":"toolbox.update"}}
 ```
+
+New version used at next start; `toolbox.apply` swaps it in while app isn't running.
 
 ## Data Location
 

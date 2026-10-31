@@ -1,23 +1,26 @@
 # Crafting Apps Catalog
 
-12 款 Crafting Apps 的能力目录。每款应用都是独立的 Rust 原生程序，对标 Adobe 对应工具。
+13 款 Crafting Apps 的能力目录。每款应用都是独立的 Rust 原生程序，对标 Adobe/Figma 对应工具。
 
 ## Quick Reference
 
-| 应用 | 对标 | CLI 命令数 | MCP 工具数 | 默认控制端口 |
-|------|------|-----------|-----------|-------------|
-| PhotoCraft | Photoshop | 858 | 21 | 7979 (认证) |
-| VectorCraft | Illustrator | 743 | 32 | 7979 |
-| FilmCraft | Premiere Pro | 693 | 17 | 9876 |
-| EffectCraft | After Effects | 669 | 27 | 9877 |
-| SoundCraft | Audition | 465 | 17 | 动态 |
-| DesignCraft | InDesign | 536 | 25 | 动态 |
-| LightCraft | Lightroom | 296 | 318 | 7980 |
-| GridCraft | Excel | 315 | 21 | 动态 |
-| WordCraft | Word | 460 | 16 | 动态 |
-| DeckCraft | PowerPoint | 226 | 25 | 动态 |
-| CADCraft | AutoCAD | 305 | 11 | 动态 |
-| PdfCraft | Acrobat | 161 | 161 | 文件 |
+| 应用 | 对标 | 默认控制端口 |
+|------|------|-------------|
+| PhotoCraft | Photoshop | 7878 (port-and-token-file) |
+| VectorCraft | Illustrator | 7879 |
+| FilmCraft | Premiere Pro | 7880 |
+| EffectCraft | After Effects | 7883 |
+| SoundCraft | Audition | 7889 |
+| DesignCraft | InDesign | 7884 |
+| LightCraft | Lightroom | 7881 |
+| GridCraft | Excel | 7887 |
+| WordCraft | Word | 7885 |
+| DeckCraft | PowerPoint | 7886 |
+| CADCraft | AutoCAD | 7888 |
+| PdfCraft | Acrobat | 文件（自选端口） |
+| FigCraft | Figma | 7890 |
+
+> 端口来自 artcraft-toolbox 官方文档（各应用有独立默认端口，多个应用可同时开启控制通道）。命令数与 MCP 工具数随版本变化，以 `commands` / MCP 工具列表实时查询为准。
 
 ## PhotoCraft — Photoshop 替代
 
@@ -110,7 +113,7 @@
 - 母版页
 - 多格式导出（PDF / EPUB / PPTX / HTML / XML）
 
-**命令数：** 536（`designcraft-cli commands` 查看全部，`describe COMMAND` 查详情）
+**命令数：** 以 `designcraft-cli commands` 实时查询为准（已实测：`commands [FILTER]` 列出，`describe COMMAND` 查详情）
 
 **调用风格：** `designcraft-cli run --cmd ID=JSON`（或 `--sample` 用内置样例文档测试）
 
@@ -137,8 +140,6 @@
 - `develop.*` — 开发
 - `export.*` — 导出
 - `catalog.*` — 目录管理
-
-**注意：** MCP 工具数高达 318，是最细粒度的应用
 
 ## GridCraft — Excel 替代
 
@@ -251,18 +252,17 @@ https://github.com/storytold/<craft-name>/releases
 
 ```bash
 # 检查应用状态
-artcraft-toolbox-cli apps_status
+artcraft-toolbox-cli status
 
 # 测试 CLI
-photocraft-cli command_list | head -20
+photocraft-cli commands | head -20
 
 # 检查控制通道
-photocraft --control 7979 --control-token-file token.txt
+photocraft --control 7878 --control-token-file token.txt
 ```
 
 ## Notes
 
 - 所有应用处于 early alpha 阶段，重要文件请备份
-- 命令数和 MCP 工具数来自 2026-10 快照，可能随版本变化
+- 命令数和 MCP 工具数随版本快速变化，以 `commands` / MCP 工具列表实时查询为准
 - 控制端口默认值可能变化，以启动时的输出为准
-- 动态端口应用需要 `--port PORT` 指定

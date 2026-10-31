@@ -1,13 +1,12 @@
 # ArtCraft AI Generation MCP
 
-The ArtCraft MCP server enables AI-driven generation of images, video, 3D models, Gaussian splats, and speech. This reference covers the model matrix, parameters, and Python CLI tools.
+The ArtCraft MCP server (from third-party community project [theCosmicCrafter/artcraft-mcp](https://github.com/theCosmicCrafter/artcraft-mcp), not storytold official) enables AI-driven generation of images, video, 3D models, Gaussian splats, and speech. This reference covers the model matrix, parameters, and Python CLI tools.
 
 ## MCP Server
 
 ### Executables
 
-- `bin/artcraft-mcp-server.exe` — core official MCP server (mcp_sessions + direct API)
-- `bin/artcraft-mcp.exe` — community 55-tool edition
+- `bin/artcraft-mcp.exe` — full tool suite (60+ tools; older docs called the core one `artcraft-mcp-server.exe`)
 
 ### Authentication
 
@@ -23,7 +22,7 @@ Resolved in order:
 
 ### MCP Tools
 
-The 55-tool community edition includes tools across 15 modules:
+The full suite includes tools across 15 modules:
 
 | Module | Example Tools |
 |--------|--------------|
@@ -73,7 +72,7 @@ The 55-tool community edition includes tools across 15 modules:
 
 ## Python CLI Tools
 
-All scripts communicate directly with `bin/artcraft-mcp-server.exe` over stdio JSON-RPC without external servers.
+> 以下脚本位于 artcraft-mcp 仓库的 `tools/` 目录，需先 clone 该仓库。All scripts communicate directly with `bin/artcraft-mcp.exe` over stdio JSON-RPC without external servers.
 
 ### artcraft_runner.py — Batch Image & Video Generation
 
@@ -163,7 +162,7 @@ For applications integrating the MCP server as a managed subprocess, `companion/
 
 ## JSON-RPC Schemas
 
-Complete tool definitions in `schemas/` directory (55 JSON files):
+Complete tool definitions in the artcraft-mcp repo's `schemas/` directory (60+ JSON files):
 
 - `artcraft_generate_image.json`
 - `artcraft_generate_video.json`

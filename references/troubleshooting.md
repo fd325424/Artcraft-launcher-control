@@ -12,8 +12,8 @@ Run `python scripts/check_env.py` first to identify missing components.
 
 **Solution:**
 ```bash
-artcraft-toolbox-cli apps_status
-artcraft-toolbox-cli command_list --filter <name>
+artcraft-toolbox-cli status
+artcraft-toolbox-cli list
 ```
 Install missing apps via Launcher.
 
@@ -28,7 +28,7 @@ Install missing apps via Launcher.
    ```
 2. Install via Launcher:
    ```bash
-   artcraft-toolbox-cli command_run --id app.install --params '{"app":"photocraft"}'
+   artcraft-toolbox-cli install photocraft
    ```
 3. Add to PATH if installed but not recognized.
 
@@ -81,7 +81,7 @@ Install missing apps via Launcher.
 **Solution:**
 1. Verify the executable path:
    ```bash
-   C:\path\to\artcraft-mcp\bin\artcraft-mcp-server.exe --version
+   C:\path\to\artcraft-mcp\bin\artcraft-mcp.exe --version
    ```
 2. Check `~/.workbuddy/mcp.json` has correct path.
 3. Open connector management and click "Trust".
@@ -95,11 +95,11 @@ Install missing apps via Launcher.
 1. Check the launcher log (in data folder, two previous runs retained).
 2. Update to the latest version:
    ```bash
-   artcraft-toolbox-cli command_run --id apps.updateAll
+   artcraft-toolbox-cli update --all
    ```
-3. Rollback if a recent update caused issues:
-   ```bash
-   artcraft-toolbox-cli command_run --id app.rollback --params '{"app":"photocraft"}'
+3. Rollback if a recent update caused issues (via MCP `command_run` or control protocol `engine.execute`):
+   ```json
+   {"method":"engine.execute","params":{"command":"app.rollback","params":{"app":"photocraft"}}}
    ```
 4. Report the issue with: OS, app, and the log.
 
@@ -114,7 +114,7 @@ Install missing apps via Launcher.
    ```
 2. Check each command exists:
    ```bash
-   filmcraft-cli command_list --filter <command-name>
+   filmcraft-cli commands
    ```
 3. Verify timecode format (ticks at 254,016,000,000/s).
 
@@ -154,7 +154,7 @@ Install missing apps via Launcher.
 **Cause:** Plugin not installed correctly, or binary not found.
 
 **Solution:**
-1. Reinstall the plugin:
+1. Reinstall the plugin (third-party DSH method, see mcp-configuration.md):
    ```bash
    dsh plugin --profile web add dsh-artcraft-plugin-photocraft
    ```

@@ -152,17 +152,18 @@ List all available methods.
 ## Crafting App Control Channels
 
 Each Crafting App has its own control channel when launched with `--control`.
+Default ports (from artcraft-toolbox official docs): each app has its own port so several can be open for agents at once.
 
 ### PhotoCraft
-Authenticated variant of the control protocol.
+Authenticated variant of the control protocol (token file required).
 
 ```bash
-photocraft --control 7979
+photocraft --control 7878 --control-token-file /path/to/photocraft-control.token
 ```
 
 ### FilmCraft
 ```bash
-filmcraft --control 9876
+filmcraft --control 7880
 # or set FILMCRAFT_CONTROL_PORT
 ```
 
@@ -177,24 +178,24 @@ Example commands:
 
 ### EffectCraft
 ```bash
-effectcraft --control 9877
+effectcraft --control 7883
 ```
 
 ### VectorCraft
 ```bash
-vectorcraft --control 7979
+vectorcraft --control 7879
 ```
 
 ### LightCraft
 ```bash
-lightcraft --control 7980
+lightcraft --control 7881
 ```
 
 ### PdfCraft
-File-based control: `pdfcraft --control FILE`
+File-based control: `pdfcraft --control FILE` — PdfCraft picks a free port and writes `{"port","token","pid"}` to FILE. Drive it via `pdfcraft-cli ui --control FILE <method>`.
 
 ### Other Apps
-Dynamic ports: start with `app --port PORT`, then pass port to control.
+Each app has its own default port (WordCraft 7885, DeckCraft 7886, GridCraft 7887, CADCraft 7888, SoundCraft 7889, FigCraft 7890). Override per app with `--control PORT`.
 
 ## MCP Resource Endpoints
 

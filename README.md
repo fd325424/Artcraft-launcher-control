@@ -5,13 +5,13 @@
 
 > An AI skill for controlling the [ArtCraft](https://github.com/storytold) open-source creative studio — manage apps, drive Crafting Apps, and generate AI media through natural language.
 
-ArtCraft 是开源 AI 创意工作室，包含 12 款对标 Adobe 的 Rust 应用（PhotoCraft、FilmCraft、VectorCraft 等）。本技能让 AI 能够通过自然语言驱动 ArtCraft 完成从应用管理到实际创作的全部工作。
+ArtCraft 是开源 AI 创意工作室，包含 13 款对标 Adobe/Figma 的 Rust 应用（PhotoCraft、FilmCraft、VectorCraft 等）。本技能让 AI 能够通过自然语言驱动 ArtCraft 完成从应用管理到实际创作的全部工作。
 
 ## Features
 
 - **三层控制面** — 覆盖 Launcher 管理、Crafting Apps 创作、AI 生成能力
 - **三种连接方式** — CLI、MCP 服务器、JSON-RPC 控制通道
-- **12 款 Crafting Apps** — PhotoCraft、VectorCraft、FilmCraft、EffectCraft、SoundCraft、DesignCraft、LightCraft、GridCraft、WordCraft、DeckCraft、CADCraft、PdfCraft
+- **13 款 Crafting Apps** — PhotoCraft、VectorCraft、FilmCraft、EffectCraft、SoundCraft、DesignCraft、LightCraft、GridCraft、WordCraft、DeckCraft、CADCraft、PdfCraft、FigCraft
 - **完整文档** — 9 份参考文档 + 3 个可执行脚本
 - **即装即用** — 兼容 WorkBuddy、Claude Code、OpenClaw 等支持 SKILL.md 格式的平台
 
@@ -22,8 +22,8 @@ ArtCraft exposes three layers of control:
 | Layer | Control Plane | Use Case | Connection |
 |-------|--------------|----------|------------|
 | **L1** | Launcher (artcraft-toolbox) | Install / update / launch Crafting Apps | CLI / Control Protocol / MCP |
-| **L2** | Crafting Apps (12 apps) | PhotoCraft editing, FilmCraft editing, VectorCraft drawing, etc. | Per-app CLI / MCP / Control Channel |
-| **L3** | AI Generation (artcraft-mcp-server) | Image / video / 3D / voice generation | MCP / Python CLI |
+| **L2** | Crafting Apps (13 apps) | PhotoCraft editing, FilmCraft editing, VectorCraft drawing, etc. | Per-app CLI / MCP / Control Channel |
+| **L3** | AI Generation (artcraft-mcp) | Image / video / 3D / voice generation | MCP / Python CLI |
 
 ## Installation
 
@@ -70,7 +70,7 @@ Once the skill is installed, use natural language:
 | "Install ArtCraft Launcher" | Guide you through download and installation |
 | "Update all Crafting Apps" | Run updates.check + apps.updateAll via Launcher |
 | "Use PhotoCraft to add a layer to this image" | Call photocraft-cli to execute creation commands |
-| "Generate a cyberpunk-style image with AI" | Use artcraft-mcp-server image generation |
+| "Generate a cyberpunk-style image with AI" | Use artcraft-mcp image generation |
 | "Edit a video with FilmCraft" | Generate JSONL script and run filmcraft-cli |
 
 ## Skill Structure
@@ -131,26 +131,31 @@ python scripts/craft_cli.py run --app photocraft --cmd "layer.add" --params '{"x
 
 ## Crafting Apps
 
-12 native Rust applications, each with its own CLI, MCP server, and control channel:
+13 native Rust applications, each with its own CLI, MCP server, and control channel:
 
-| App | Adobe Equivalent | CLI | Commands |
-|-----|-----------------|-----|----------|
-| PhotoCraft | Photoshop | photocraft-cli | 858 |
-| VectorCraft | Illustrator | vectorcraft-cli | 743 |
-| FilmCraft | Premiere Pro | filmcraft-cli | 693 |
-| EffectCraft | After Effects | effectcraft-cli | 669 |
-| SoundCraft | Audition | soundcraft-cli | 465 |
-| DesignCraft | InDesign | designcraft-cli | 446 |
-| LightCraft | Lightroom | lightcraft-cli | 296 |
-| GridCraft | Excel | gridcraft-cli | 315 |
-| WordCraft | Word | wordcraft-cli | 460 |
-| DeckCraft | PowerPoint | deckcraft-cli | 226 |
-| CADCraft | AutoCAD | cadcraft-cli | 305 |
-| PdfCraft | Acrobat | pdfcraft-cli | 161 |
+| App | Equivalent | CLI |
+|-----|-----------|-----|
+| PhotoCraft | Photoshop | photocraft-cli |
+| VectorCraft | Illustrator | vectorcraft-cli |
+| FilmCraft | Premiere Pro | filmcraft-cli |
+| EffectCraft | After Effects | effectcraft-cli |
+| SoundCraft | Audition | soundcraft-cli |
+| DesignCraft | InDesign | designcraft-cli |
+| LightCraft | Lightroom | lightcraft-cli |
+| GridCraft | Excel | gridcraft-cli |
+| WordCraft | Word | wordcraft-cli |
+| DeckCraft | PowerPoint | deckcraft-cli |
+| CADCraft | AutoCAD | cadcraft-cli |
+| PdfCraft | Acrobat | pdfcraft-cli |
+| FigCraft | Figma | figcraft-cli |
+
+命令数随版本快速变化，以各 CLI 的 `commands` 子命令实时查询为准。
 
 ## MCP Configuration
 
 ### AI Generation MCP
+
+> 以下 MCP server 来自第三方社区项目 [theCosmicCrafter/artcraft-mcp](https://github.com/theCosmicCrafter/artcraft-mcp)（非 storytold 官方），需先 clone 该仓库。
 
 Add to your MCP client config (e.g., `~/.workbuddy/mcp.json` or `~/.claude.json`):
 
@@ -158,7 +163,7 @@ Add to your MCP client config (e.g., `~/.workbuddy/mcp.json` or `~/.claude.json`
 {
   "mcpServers": {
     "artcraft": {
-      "command": "C:\\path\\to\\artcraft-mcp\\bin\\artcraft-mcp-server.exe",
+      "command": "C:\\path\\to\\artcraft-mcp\\bin\\artcraft-mcp.exe",
       "args": []
     }
   }
@@ -205,6 +210,7 @@ MIT — see [LICENSE](LICENSE)
 ## Links
 
 - [ArtCraft Official Site](https://getartcraft.com)
-- [ArtCraft GitHub Organization](https://github.com/storytold)
-- [ArtCraft MCP Server](https://github.com/theCosmicCrafter/artcraft-mcp)
-- [DSH ArtCraft Plugins](https://github.com/lznnnnn1998/dsh-artcraft)
+- [ArtCraft GitHub Organization](https://github.com/storytold)（官方）
+- [artcraft-toolbox](https://github.com/smyrgeorge/artcraft-toolbox)（社区套件管理器，非官方）
+- [ArtCraft MCP Server](https://github.com/theCosmicCrafter/artcraft-mcp)（第三方社区项目，非官方）
+- [DSH ArtCraft Plugins](https://github.com/lznnnnn1998/dsh-artcraft)（第三方社区项目，非官方）

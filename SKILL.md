@@ -1,21 +1,21 @@
 ---
 name: artcraft-launcher-control
-description: 通过 AI 操作 ArtCraft 开源创意工作室。覆盖三层控制面：Launcher 应用管理（安装/更新/启动 Crafting Apps）、Crafting Apps 创作（PhotoCraft/VectorCraft/FilmCraft 等 12 款应用的 CLI/MCP/控制通道）、AI 生成能力（图像/视频/3D/语音）。当用户要求操作 ArtCraft、管理 Crafting Apps、用 ArtCraft 做创作、或询问 ArtCraft 安装配置时使用此技能。
+description: 通过 AI 操作 ArtCraft 开源创意工作室。覆盖三层控制面：Launcher 应用管理（安装/更新/启动 Crafting Apps）、Crafting Apps 创作（PhotoCraft/VectorCraft/FilmCraft 等 13 款应用的 CLI/MCP/控制通道）、AI 生成能力（图像/视频/3D/语音）。当用户要求操作 ArtCraft、管理 Crafting Apps、用 ArtCraft 做创作、或询问 ArtCraft 安装配置时使用此技能。
 ---
 
 # ArtCraft Launcher Control
 
 ## Overview
 
-ArtCraft 是一个开源 AI 创意工作室，包含对标 Adobe 的 12 款 Rust 应用（Crafting Apps）。每款应用都提供 CLI、MCP 服务器和控制通道三种接口，Launcher 本身也有独立的 CLI 和控制协议。本技能让 AI 能够通过自然语言驱动 ArtCraft 完成从应用管理到实际创作的全部工作。
+ArtCraft 是一个开源 AI 创意工作室，包含对标 Adobe 的 13 款 Rust 应用（Crafting Apps）。每款应用都提供 CLI、MCP 服务器和控制通道三种接口，Launcher 本身也有独立的 CLI 和控制协议。本技能让 AI 能够通过自然语言驱动 ArtCraft 完成从应用管理到实际创作的全部工作。
 
 ArtCraft 的三层控制面：
 
 | 层级 | 控制面 | 适用场景 | 连接方式 |
 |------|--------|----------|----------|
 | L1 | Launcher (artcraft-toolbox) | 检测/安装/更新/启动 Crafting Apps | CLI / 控制协议 / MCP |
-| L2 | Crafting Apps (12 款) | PhotoCraft 修图、FilmCraft 剪辑、VectorCraft 画矢量等 | 各自 CLI / MCP / 控制通道 |
-| L3 | AI 生成 (artcraft-mcp-server) | 图像/视频/3D/语音生成、积分管理 | MCP / Python CLI |
+| L2 | Crafting Apps (13 款) | PhotoCraft 修图、FilmCraft 剪辑、VectorCraft 画矢量等 | 各自 CLI / MCP / 控制通道 |
+| L3 | AI 生成 (artcraft-mcp) | 图像/视频/3D/语音生成、积分管理 | MCP / Python CLI |
 
 ## Workflow Decision Tree
 
@@ -64,19 +64,22 @@ Launcher 负责 Crafting Apps 的检测、安装、更新和启动。
 ### CLI 方式
 
 ```bash
-# 检测所有应用状态
-artcraft-toolbox-cli apps_status
+# 查看目录与状态
+artcraft-toolbox-cli status
+artcraft-toolbox-cli list
 
 # 检查更新
-artcraft-toolbox-cli command_run --id updates.check
+artcraft-toolbox-cli check
 
 # 安装/更新特定应用
-artcraft-toolbox-cli command_run --id app.install --params '{"app":"photocraft","version":"0.7.0"}'
-artcraft-toolbox-cli command_run --id apps.updateAll
+artcraft-toolbox-cli install photocraft
+artcraft-toolbox-cli update --all
 
 # 启动应用（带控制通道）
-artcraft-toolbox-cli command_run --id app.launch --params '{"app":"photocraft","control":true}'
+artcraft-toolbox-cli open photocraft --control
 ```
+
+> 注意：`apps_status`、`command_list`、`command_run` 是 **MCP 工具名**，不是 CLI 子命令。CLI 子命令为 `status` / `list` / `check` / `install` / `update` / `open` / `mcp` / `serve`。
 
 ### 控制协议方式（JSON-RPC over loopback TCP）
 
@@ -101,40 +104,44 @@ artcraft-toolbox --control 7877 --control-token-file /path/to/token
 
 ## L2: Crafting Apps 创作
 
-12 款 Crafting Apps 各有独立的 CLI 和 MCP 服务器。核心应用：
+13 款 Crafting Apps 各有独立的 CLI 和 MCP 服务器。核心应用：
 
-| 应用 | 对标 | CLI | 命令数 |
-|------|------|-----|--------|
-| PhotoCraft | Photoshop | photocraft-cli | 858 |
-| VectorCraft | Illustrator | vectorcraft-cli | 743 |
-| FilmCraft | Premiere Pro | filmcraft-cli | 693 |
-| EffectCraft | After Effects | effectcraft-cli | 669 |
-| SoundCraft | Audition | soundcraft-cli | 465 |
-| DesignCraft | InDesign | designcraft-cli | 536 |
-| LightCraft | Lightroom | lightcraft-cli | 296 |
-| GridCraft | Excel | gridcraft-cli | 315 |
-| WordCraft | Word | wordcraft-cli | 460 |
-| DeckCraft | PowerPoint | deckcraft-cli | 226 |
-| CADCraft | AutoCAD | cadcraft-cli | 305 |
-| PdfCraft | Acrobat | pdfcraft-cli | 161 |
+| 应用 | 对标 | CLI | 备注 |
+|------|------|-----|------|
+| PhotoCraft | Photoshop | photocraft-cli | 已公开 CLI 文档 |
+| VectorCraft | Illustrator | vectorcraft-cli | |
+| FilmCraft | Premiere Pro | filmcraft-cli | 需 JSONL 脚本 |
+| EffectCraft | After Effects | effectcraft-cli | |
+| SoundCraft | Audition | soundcraft-cli | |
+| DesignCraft | InDesign | designcraft-cli | 已实测 |
+| LightCraft | Lightroom | lightcraft-cli | |
+| GridCraft | Excel | gridcraft-cli | |
+| WordCraft | Word | wordcraft-cli | |
+| DeckCraft | PowerPoint | deckcraft-cli | |
+| CADCraft | AutoCAD | cadcraft-cli | |
+| PdfCraft | Acrobat | pdfcraft-cli | 子命令风格 |
+| FigCraft | Figma | figcraft-cli | 界面设计 |
 
 ### CLI 调用语法
 
 不同应用的 CLI 语法有差异，详见 references/craft-cli-syntax.md。常见模式：
 
 ```bash
+# DesignCraft 风格（实测确认：子命令 run + --cmd ID=JSON）
+designcraft-cli run --cmd file.exportPdf='{"path":"out.pdf"}'
+designcraft-cli run --sample --cmd file.exportPdf='{"path":"out.pdf"}'
+designcraft-cli commands            # 列出命令
+designcraft-cli describe file.exportPdf
+
+# PhotoCraft/VectorCraft 风格（run 子命令 + --cmd ID=JSON）
+photocraft-cli run photo.psd --cmd 'layer.add={"x":100}' --out out.png
+photocraft-cli commands             # 列出命令
+
 # GridCraft/CADCraft/DeckCraft/WordCraft/SoundCraft 风格
 gridcraft-cli --cmd 'id={...}'
 
-# DesignCraft 风格（子命令 run + --cmd ID=JSON）
-designcraft-cli run --cmd file.exportPdf='{"path":"out.pdf"}'
-designcraft-cli run --sample --cmd file.exportPdf='{"path":"out.pdf"}'
-
-# PhotoCraft/VectorCraft 风格
-photocraft-cli --cmd id --params '{...}'
-
 # LightCraft 风格
-lightcraft-cli id key=value
+lightcraft-cli id --key=value
 
 # EffectCraft 风格
 effectcraft-cli id '{...}'
@@ -167,7 +174,7 @@ photocraft_convert   {"input":"...","output":"..."}
 桌面应用启动时加 `--control` 参数即可开启控制通道，然后通过 JSON-RPC 驱动：
 
 ```bash
-photocraft --control 7979
+photocraft --control 7878
 ```
 
 ```json
@@ -176,7 +183,7 @@ photocraft --control 7979
 
 ## L3: AI 生成能力
 
-ArtCraft 的 AI 生成通过 artcraft-mcp-server 提供，支持图像、视频、3D 网格、高斯泼溅、语音合成。
+ArtCraft 的 AI 生成通过 artcraft-mcp 项目（第三方社区项目）提供，支持图像、视频、3D 网格、高斯泼溅、语音合成。
 
 ### MCP 配置
 
@@ -186,7 +193,7 @@ ArtCraft 的 AI 生成通过 artcraft-mcp-server 提供，支持图像、视频�
 {
   "mcpServers": {
     "artcraft": {
-      "command": "C:\\path\\to\\artcraft-mcp\\bin\\artcraft-mcp-server.exe",
+      "command": "C:\\path\\to\\artcraft-mcp\\bin\\artcraft-mcp.exe",
       "args": []
     }
   }
@@ -201,8 +208,10 @@ ArtCraft 的 AI 生成通过 artcraft-mcp-server 提供，支持图像、视频�
 
 ### Python CLI 工具
 
+> 以下脚本位于 [theCosmicCrafter/artcraft-mcp](https://github.com/theCosmicCrafter/artcraft-mcp) 仓库的 `tools/` 目录（第三方社区项目，非 storytold 官方），需先 clone 该仓库后使用。
+
 ```bash
-# 批量图像/视频生成
+# 批量图像/视频生成（在 artcraft-mcp 仓库根目录运行）
 python tools/artcraft_runner.py --prompt "描述" --model flux_1_dev --copies 2 --out-dir ./outputs
 
 # 检查积分
@@ -226,23 +235,23 @@ python tools/artcraft_3d_runner.py --image "path.png" --mode both --out-dir ./ou
 
 ### 工作流 2：更新所有 Crafting Apps
 
-1. `apps_status` 查看当前状态
-2. `command_run --id updates.check` 检查更新
-3. `command_run --id apps.updateAll` 执行更新
-4. `apps_status` 确认更新完成
+1. `artcraft-toolbox-cli status` 查看当前状态
+2. `artcraft-toolbox-cli check` 检查更新
+3. `artcraft-toolbox-cli update --all` 执行更新
+4. `artcraft-toolbox-cli status` 确认更新完成
 
 ### 工作流 3：用 PhotoCraft 修图
 
 1. 确认 photocraft-cli 可用（check_env.py 已检测）
-2. 查可用命令：`photocraft-cli command_list`
-3. 查命令参数：`photocraft-cli describe --id <command>`
-4. 执行：`photocraft-cli --cmd <id> --params '{...}'`
+2. 查可用命令：`photocraft-cli commands`
+3. 查命令参数：`photocraft-cli commands --filter <command> --json`
+4. 执行：`photocraft-cli run <file> --cmd '<id>={...}' --out <output>`
 5. 验证输出文件
 
 ### 工作流 4：用 FilmCraft 剪辑
 
 1. 确认 filmcraft-cli 可用
-2. 查看命令列表：`filmcraft-cli command_list`
+2. 查看命令列表：`filmcraft-cli commands`
 3. FilmCraft 需要 JSONL 脚本文件，格式见 references/craft-cli-syntax.md
 4. 执行：`filmcraft-cli --script script.jsonl`
 
@@ -260,8 +269,8 @@ python tools/artcraft_3d_runner.py --image "path.png" --mode both --out-dir ./ou
 
 ### 工作流 5：AI 生成图像
 
-1. 确认 artcraft-mcp-server 已配置且凭证有效
-2. 调用 MCP 工具生成图像（或用 Python CLI）
+1. 确认 artcraft-mcp 已配置且凭证有效
+2. 调用 MCP 工具生成图像（或用 artcraft-mcp 仓库的 Python CLI）
 3. 检查输出文件
 
 ## Error Handling
@@ -283,6 +292,8 @@ python tools/artcraft_3d_runner.py --image "path.png" --mode both --out-dir ./ou
 
 ### scripts/
 - `check_env.py` — 环境检测脚本，检查 Launcher、Crafting Apps CLI、MCP 配置、凭证
+- `control_call.py` — 控制协议（JSON-RPC）客户端
+- `craft_cli.py` — Crafting Apps CLI 统一包装器
 
 ### references/
 - `architecture.md` — ArtCraft 整体架构和三层控制面说明
@@ -290,7 +301,7 @@ python tools/artcraft_3d_runner.py --image "path.png" --mode both --out-dir ./ou
 - `launcher-commands.md` — Launcher 全部命令和参数
 - `control-protocol.md` — 控制协议（JSON-RPC）详细规范
 - `craft-cli-syntax.md` — 各 Crafting App CLI 语法差异
-- `craft-apps-catalog.md` — 12 款 Crafting Apps 能力目录
+- `craft-apps-catalog.md` — 13 款 Crafting Apps 能力目录
 - `mcp-configuration.md` — MCP 配置方法（WorkBuddy/Claude Desktop 等）
 - `ai-generation-mcp.md` — AI 生成模型矩阵、参数、Python CLI 工具
 - `troubleshooting.md` — 常见错误和故障排查

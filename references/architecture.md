@@ -5,8 +5,8 @@
 ArtCraft 是一个开源 AI 创意工作室，由 storytold 组织在 GitHub 上发布。它包含：
 
 1. **ArtCraft Studio** — 主应用，集成 AI 生成和创意工作流
-2. **ArtCraft Launcher (artcraft-toolbox)** — 应用启动器，管理 12 款 Crafting Apps
-3. **12 款 Crafting Apps** — 对标 Adobe 的 Rust 原生应用
+2. **ArtCraft Launcher** — 应用启动器，管理 13 款 Crafting Apps（社区工具箱 artcraft-toolbox 亦可管理）
+3. **13 款 Crafting Apps** — 对标 Adobe/Figma 的 Rust 原生应用
 4. **ArtCraft AI 生成服务** — 云端 AI 生成 API，通过 MCP server 暴露
 
 ## Three Layers of Control
@@ -30,10 +30,10 @@ Launcher 是 Crafting Apps 的安装器和更新器。
 
 **命令示例：**
 ```bash
-artcraft-toolbox-cli apps_status
-artcraft-toolbox-cli command_run --id updates.check
-artcraft-toolbox-cli command_run --id app.install --params '{"app":"photocraft","version":"0.7.0"}'
-artcraft-toolbox-cli command_run --id app.launch --params '{"app":"photocraft","control":true}'
+artcraft-toolbox-cli status
+artcraft-toolbox-cli install photocraft
+artcraft-toolbox-cli update --all
+artcraft-toolbox-cli open photocraft --control
 ```
 
 ### L2: Crafting Apps Control Plane
@@ -43,7 +43,7 @@ artcraft-toolbox-cli command_run --id app.launch --params '{"app":"photocraft","
 **1. CLI（headless，一次性执行）**
 - 每个应用有独立 CLI：`photocraft-cli`、`filmcraft-cli`、`vectorcraft-cli` 等
 - 执行命令后退出，适合脚本化
-- 命令数从 161（PdfCraft）到 858（PhotoCraft）不等
+- 语法按应用分组，详见 references/craft-cli-syntax.md
 
 **2. MCP 服务器（JSON-RPC over stdio）**
 - 每个应用内嵌 MCP 服务器
@@ -56,30 +56,31 @@ artcraft-toolbox-cli command_run --id app.launch --params '{"app":"photocraft","
 - 实时驱动正在运行的应用
 - 可获取 UI 状态、截图等
 
-**12 款应用：**
+**13 款应用：**
 
-| 应用 | 对标 | CLI | 命令数 | MCP 工具数 |
-|------|------|-----|--------|------------|
-| PhotoCraft | Photoshop | photocraft-cli | 858 | 21 |
-| VectorCraft | Illustrator | vectorcraft-cli | 743 | 32 |
-| FilmCraft | Premiere Pro | filmcraft-cli | 693 | 17 |
-| EffectCraft | After Effects | effectcraft-cli | 669 | 27 |
-| SoundCraft | Audition | soundcraft-cli | 465 | 17 |
-| DesignCraft | InDesign | designcraft-cli | 446 | 25 |
-| LightCraft | Lightroom | lightcraft-cli | 296 | 318 |
-| GridCraft | Excel | gridcraft-cli | 315 | 21 |
-| WordCraft | Word | wordcraft-cli | 460 | 16 |
-| DeckCraft | PowerPoint | deckcraft-cli | 226 | 25 |
-| CADCraft | AutoCAD | cadcraft-cli | 305 | 11 |
-| PdfCraft | Acrobat | pdfcraft-cli | 161 | 161 |
+| 应用 | 对标 | CLI |
+|------|------|-----|
+| PhotoCraft | Photoshop | photocraft-cli |
+| VectorCraft | Illustrator | vectorcraft-cli |
+| FilmCraft | Premiere Pro | filmcraft-cli |
+| EffectCraft | After Effects | effectcraft-cli |
+| SoundCraft | Audition | soundcraft-cli |
+| DesignCraft | InDesign | designcraft-cli |
+| LightCraft | Lightroom | lightcraft-cli |
+| GridCraft | Excel | gridcraft-cli |
+| WordCraft | Word | wordcraft-cli |
+| DeckCraft | PowerPoint | deckcraft-cli |
+| CADCraft | AutoCAD | cadcraft-cli |
+| PdfCraft | Acrobat | pdfcraft-cli |
+| FigCraft | Figma | figcraft-cli |
 
 ### L3: AI Generation Control Plane
 
-ArtCraft 的云端 AI 生成服务通过 `artcraft-mcp-server` 暴露。
+ArtCraft 的云端 AI 生成服务通过 artcraft-mcp 项目的 MCP server 暴露（第三方社区项目 [theCosmicCrafter/artcraft-mcp](https://github.com/theCosmicCrafter/artcraft-mcp)，非 storytold 官方）。
 
-**两种 MCP server：**
-- `artcraft-mcp-server.exe` — 核心官方版（mcp_sessions + direct API）
-- `artcraft-mcp.exe` — 社区扩展版（55 个工具）
+**MCP server（位于 artcraft-mcp 仓库 bin/）：**
+- `artcraft-mcp.exe` — 完整工具版（约 61 个工具）
+- 旧文档中的 `artcraft-mcp-server.exe` 为早期核心版名称
 
 **生成能力：**
 - 图像：Flux 1 Dev/Schnell、Flux Pro 1.1 Ultra、Nano Banana Pro、Seedream 4/4.5/5、Midjourney 7/8
@@ -87,7 +88,7 @@ ArtCraft 的云端 AI 生成服务通过 `artcraft-mcp-server` 暴露。
 - 3D：Hunyuan 3D 2.0/2.1、WorldLabs Marble Gaussian Splatting
 - 语音：TTS
 
-**Python CLI 工具：**
+**Python CLI 工具（位于 artcraft-mcp 仓库 tools/）：**
 - `artcraft_runner.py` — 批量图像/视频生成
 - `artcraft_3d_runner.py` — 3D 网格和高斯泼溅
 - `artcraft_angle_matrix.py` — 四象限相机轨道
